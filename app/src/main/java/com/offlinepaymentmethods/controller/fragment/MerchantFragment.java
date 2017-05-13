@@ -111,7 +111,8 @@ public class MerchantFragment extends BaseFragment implements OnActivityResultLi
             if(data.contains(Constants.SECURITY_KEY)) {
                 data = data.substring(0, data.length() - Constants.SECURITY_KEY.length() - 1);
             }
-            _receivedInfo.setText(new EncryptDecrypt().decrypt(data));
+            data = new EncryptDecrypt().decrypt(data);
+            _receivedInfo.setText(data);
             ClientInfo info = new Gson().fromJson(data, ClientInfo.class);
             Float totalAmount = info.getPayAmount() + PreferenceManager.getInstance(getContext()).getMerchantBalance();
             PreferenceManager.getInstance(getContext()).setMerchantBalance(totalAmount);
@@ -238,13 +239,15 @@ public class MerchantFragment extends BaseFragment implements OnActivityResultLi
                 if(receivedData.contains(Constants.SECURITY_KEY)) {
                     receivedData = receivedData.substring(0, receivedData.length() - Constants.SECURITY_KEY.length() - 1);
                 }
-                _receivedInfo.setText(new EncryptDecrypt().decrypt(receivedData));
+                receivedData = new EncryptDecrypt().decrypt(receivedData);
+                _receivedInfo.setText(receivedData);
                 ClientInfo info = new Gson().fromJson(receivedData, ClientInfo.class);
                 Float totalAmount = info.getPayAmount() + PreferenceManager.getInstance(getContext()).getMerchantBalance();
                 PreferenceManager.getInstance(getContext()).setMerchantBalance(totalAmount);
                 _merchantBalance.setText("Available Balance: ₹" + PreferenceManager.getInstance(getContext()).getMerchantBalance());
             } catch (Exception e) {
                 e.printStackTrace();
+                Toast.makeText(getContext(), "Some thing bad happened !!!", Toast.LENGTH_LONG).show();
             }
         }
     }
