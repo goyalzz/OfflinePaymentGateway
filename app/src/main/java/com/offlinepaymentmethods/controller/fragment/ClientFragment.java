@@ -134,7 +134,7 @@ public class ClientFragment extends BaseFragment implements View.OnClickListener
                 if(b)
                     _btAmountll.setVisibility(View.VISIBLE);
                 else
-                    _btAmountll.setVisibility(View.VISIBLE);
+                    _btAmountll.setVisibility(View.GONE);
                 break;
         }
     }
@@ -143,7 +143,7 @@ public class ClientFragment extends BaseFragment implements View.OnClickListener
         try {
             clientInfo = validateData(view, PaymentMethod.QR);
             if(clientInfo != null) {
-                PreferenceManager.getInstance(getContext()).setClientBalance(Float.parseFloat(String.valueOf(PreferenceManager.getInstance(getContext()).getClientBalance() - clientInfo.getPayAmount())));
+                PreferenceManager.getInstance(getContext()).setClientBalance(PreferenceManager.getInstance(getContext()).getClientBalance() - clientInfo.getPayAmount());
                 _clientBalance.setText("Available Balance: ₹" + PreferenceManager.getInstance(getContext()).getClientBalance());
                 Intent intent = new Intent(getActivity(), QRGeneratorActivity.class);
                 Bundle bdl = new Bundle();
@@ -171,9 +171,13 @@ public class ClientFragment extends BaseFragment implements View.OnClickListener
 
     private ClientInfo validateData(View view, PaymentMethod paymentMethod) throws Exception {
         String availableBalance = _clientBalance.getText().toString().split(getResources().getString(R.string.rupee_symbol))[1];
-        String amountToPay = _qrAmountEt.getText().toString();
-        Double avlBal = Double.parseDouble(availableBalance);
-        Double payAmt = Double.parseDouble(amountToPay);
+        String amountToPay = null;
+        if(_qrPayment.isChecked())
+            amountToPay = _qrAmountEt.getText().toString();
+        else if(_btPayment.isChecked())
+            amountToPay = _btAmountEt.getText().toString();
+        Float avlBal = Float.parseFloat(availableBalance);
+        Float payAmt = Float.parseFloat(amountToPay);
         if (avlBal >= payAmt) {
             ClientInfo clientInfo = new ClientInfo();
             clientInfo.setId(Integer.parseInt(_clientId.getText().toString().split(" ")[2]));
@@ -214,7 +218,7 @@ public class ClientFragment extends BaseFragment implements View.OnClickListener
         if(device.isPaired()) {
             try {
                 mSmoothBluetooth.send(new EncryptDecrypt().encrypt(clientInfo.toString()) + Constants.SECURITY_KEY);
-                PreferenceManager.getInstance(getContext()).setClientBalance(Float.parseFloat(String.valueOf(PreferenceManager.getInstance(getContext()).getClientBalance() - clientInfo.getPayAmount())));
+                PreferenceManager.getInstance(getContext()).setClientBalance(PreferenceManager.getInstance(getContext()).getClientBalance() - clientInfo.getPayAmount());
                 _clientBalance.setText("Available Balance: ₹" + PreferenceManager.getInstance(getContext()).getClientBalance());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -263,8 +267,12 @@ public class ClientFragment extends BaseFragment implements View.OnClickListener
         builder.setTitle("Make your selection");
         builder.setItems(items, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
-                Device device = deviceList.get(item);
-                connectionCallback.connectTo(device);
+                String deviceName = items[item].toString();
+                for (Device device: deviceList) {
+                    if((device.getName() + " - " + device.getAddress()).equals(deviceName)) {
+                        connectionCallback.connectTo(device);
+                    }
+                }
             }
         });
         AlertDialog alert = builder.create();

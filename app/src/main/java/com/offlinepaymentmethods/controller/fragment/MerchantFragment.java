@@ -113,7 +113,7 @@ public class MerchantFragment extends BaseFragment implements OnActivityResultLi
             }
             _receivedInfo.setText(new EncryptDecrypt().decrypt(data));
             ClientInfo info = new Gson().fromJson(data, ClientInfo.class);
-            Float totalAmount = Float.parseFloat(String.valueOf(info.getPayAmount() + PreferenceManager.getInstance(getContext()).getMerchantBalance()));
+            Float totalAmount = info.getPayAmount() + PreferenceManager.getInstance(getContext()).getMerchantBalance();
             PreferenceManager.getInstance(getContext()).setMerchantBalance(totalAmount);
             _merchantBalance.setText("Available Balance: ₹" + PreferenceManager.getInstance(getContext()).getMerchantBalance());
         } catch (Exception e) {
@@ -219,22 +219,7 @@ public class MerchantFragment extends BaseFragment implements OnActivityResultLi
 
     @Override
     public void onDevicesFound(final List<Device> deviceList, final SmoothBluetooth.ConnectionCallback connectionCallback) {
-        List<String> deviceNameList = new ArrayList<>();
-        for (Device device: deviceList) {
-            deviceNameList.add(device.getName() + " - " + device.getAddress());
-        }
 
-        final CharSequence[] items = deviceNameList.toArray(new CharSequence[deviceNameList.size()]);
-        AlertDialog.Builder builder = new AlertDialog.Builder(MerchantFragment.this.getActivity());
-        builder.setTitle("Make your selection");
-        builder.setItems(items, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int item) {
-                Device device = deviceList.get(item);
-                connectionCallback.connectTo(device);
-            }
-        });
-        AlertDialog alert = builder.create();
-        alert.show();
     }
 
     @Override
@@ -255,7 +240,7 @@ public class MerchantFragment extends BaseFragment implements OnActivityResultLi
                 }
                 _receivedInfo.setText(new EncryptDecrypt().decrypt(receivedData));
                 ClientInfo info = new Gson().fromJson(receivedData, ClientInfo.class);
-                Float totalAmount = Float.parseFloat(String.valueOf(info.getPayAmount() + PreferenceManager.getInstance(getContext()).getMerchantBalance()));
+                Float totalAmount = info.getPayAmount() + PreferenceManager.getInstance(getContext()).getMerchantBalance();
                 PreferenceManager.getInstance(getContext()).setMerchantBalance(totalAmount);
                 _merchantBalance.setText("Available Balance: ₹" + PreferenceManager.getInstance(getContext()).getMerchantBalance());
             } catch (Exception e) {

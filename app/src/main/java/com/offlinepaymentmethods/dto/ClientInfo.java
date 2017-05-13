@@ -15,9 +15,9 @@ public class ClientInfo implements Serializable {
 
     private Integer id;
 
-    private Double availableAmount;
+    private Float availableAmount;
 
-    private Double payAmount;
+    private Float payAmount;
 
     private Integer merchantId;
 
@@ -31,19 +31,19 @@ public class ClientInfo implements Serializable {
         this.id = id;
     }
 
-    public Double getAvailableAmount() {
+    public Float getAvailableAmount() {
         return availableAmount;
     }
 
-    public void setAvailableAmount(Double availableAmount) {
+    public void setAvailableAmount(Float availableAmount) {
         this.availableAmount = availableAmount;
     }
 
-    public Double getPayAmount() {
+    public Float getPayAmount() {
         return payAmount;
     }
 
-    public void setPayAmount(Double payAmount) {
+    public void setPayAmount(Float payAmount) {
         this.payAmount = payAmount;
     }
 
